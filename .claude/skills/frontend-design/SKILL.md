@@ -8,129 +8,144 @@ description: The permanent visual design standard for this website. Use it whene
 This is the permanent visual standard for this project. Every UI change must follow it. If a request conflicts with a rule here, point out the conflict to the user before going ahead.
 
 Project facts you need:
-- Next.js App Router, TypeScript, Tailwind CSS v4, Motion for React (`motion/react`), Lucide (`lucide-react`).
-- Design tokens are in `src/app/globals.css` (CSS variables exposed through `@theme inline`).
-- Site-wide text is in `src/lib/site.ts`. Sections are in `src/components/`.
-- This Next.js version differs from older ones. Check `node_modules/next/dist/docs/` before using a Next.js API (see `AGENTS.md`).
+- Next.js App Router, TypeScript, Tailwind CSS v4, Motion for React (`motion/react`), Lucide (`lucide-react`), GSAP + ScrollTrigger (scroll storytelling), three.js + React Three Fiber (hero globe only).
+- Design tokens are in `src/app/globals.css` (CSS variables exposed through `@theme inline`). The type scale presets are in `src/lib/typography.ts`.
+- Site-wide text is in `src/lib/site.ts`. Page content (divisions A–Z, practices, markets, FAQ) is in `src/content/`. Sections are in `src/components/sections/`, primitives in `src/components/ui/`, animation helpers in `src/components/motion/`.
+- This Next.js version differs from older ones. Check `node_modules/next/dist/docs/` before using a Next.js API (see `AGENTS.md`). Cache Components is on: never call `new Date()` or `Math.random()` while rendering.
 
 ## 1. Design direction
 
-The goal is a polished, agency-quality site that does not look AI-generated.
+The goal is a polished, agency-quality site that does not look AI-generated. Brand idea: **"signal in the dark"**, the night-side globe from the DigitalScope emblem. Deep navy, royal blue, and gold used sparingly as the "signal".
 
 - **Avoid generic AI aesthetics.** Avoid these patterns: purple-to-pink gradients, a glowing blob behind the hero, a centered badge pill above a centered headline, three or four identical icon cards in a row, and stock phrases like "Build something amazing".
 - **Use intentional hierarchy.** Each section has one focal point. Rank its elements by size, weight, color and space so the reader's eye knows where to go first, second and third.
-- **Use sophisticated layouts, not repeated card grids.** Before reaching for a grid of cards, consider a numbered list, a split layout, a table, a timeline, alternating rows or one large feature next to supporting details.
+- **Use sophisticated layouts, not repeated card grids.** Before reaching for a grid of cards, consider a numbered list, a split layout, a table, a timeline, alternating rows, an index, or one large feature next to supporting details.
 - **Use whitespace deliberately.** Empty space separates ideas and gives important elements room. Don't fill every gap.
-- **Use few gradients.** At most one subtle gradient per page, and only when it has a purpose. Never put gradients on text, buttons or card backgrounds by default.
-- **Limit rounded rectangles.** Choose one small radius scale and stick to it: `rounded-sm` or `rounded-md` for controls and `rounded-lg` at most for large surfaces. Not every block needs a rounded box around it. Often a border line or plain spacing is enough.
-- **Avoid unnecessary pills.** Don't use `rounded-full` on buttons, badges or tags unless the shape carries meaning (for example, a status dot or avatar).
-- **No random icons.** Use an icon only when it adds meaning a word cannot. Never add an icon just to decorate a heading or card. Use one icon size and stroke weight per context.
-- **Don't center every section.** Left-aligned text is the default. Use centering rarely and on purpose, for example a single short closing statement.
+- **Use few gradients.** At most one subtle gradient per page, and only when it has a purpose (the globe's placeholder sphere is the one on the homepage). Never put gradients on text, buttons or card backgrounds.
+- **Square corners.** Controls and panels use no rounding. Circles are reserved for meaning: the gold scope dot, status dots, map nodes.
+- **Avoid unnecessary pills.** Don't use `rounded-full` on buttons, badges or tags.
+- **No random icons.** Use an icon only when it adds meaning a word cannot (arrows on links, search, plus/close). One size per context (`size-4` in buttons and links).
+- **Don't center every section.** Left-aligned text is the default.
+- **The gold scope dot** (`<ScopeDot />`) replaces the full stop in headlines; the gold orb (`scope-o`) replaces the "o" in "Scope". Use gold only for these signals, focus rings on dark sections and tiny highlights.
+- **Honest content.** Never invent client names, testimonials, statistics or results. Illustrative interfaces must be labeled "Illustrative". Never promise guaranteed rankings or AI visibility.
 
 ## 2. Typography
 
-Use only this scale. Do not invent sizes or use arbitrary values like `text-[37px]`.
+Two families, loaded through `next/font` in `src/app/layout.tsx`:
+- **Mona Sans** (variable, with a width axis) for display and body. Headlines use the expanded width (`font-stretch-expanded` or `font-stretch-semi-expanded`).
+- **Geist Mono** for labels, numbers and codes.
 
-| Role               | Mobile → desktop classes                                    | Weight / tracking                         |
-| ------------------ | ----------------------------------------------------------- | ----------------------------------------- |
-| Display (hero h1)  | `text-5xl` → `md:text-6xl` → `lg:text-7xl`                   | `font-semibold tracking-tight leading-[1.05]` |
-| Section heading h2 | `text-3xl` → `md:text-4xl` → `lg:text-5xl`                   | `font-semibold tracking-tight leading-tight` |
-| Subheading h3      | `text-xl` → `md:text-2xl`                                    | `font-medium leading-snug`                |
-| Lead paragraph     | `text-lg` → `md:text-xl`                                     | `font-normal leading-relaxed text-muted`  |
-| Body               | `text-base`                                                 | `leading-relaxed`                          |
-| Small / caption    | `text-sm`                                                   | `leading-normal text-muted`                |
-| Label / eyebrow    | `text-xs` or `text-sm`                                      | `font-medium uppercase tracking-widest`   |
+Use only the presets in `src/lib/typography.ts` (`type.hero`, `type.mega`, `type.display`, `type.heading`, `type.subheading`, `type.lead`, `type.body`, `type.small`, `type.label`). Do not invent sizes or use arbitrary values like `text-[37px]`.
 
-- Each role must look clearly different from its neighbors. Body text never competes with headings.
-- Body text is never smaller than `text-base` (16px) on any screen size.
-- Keep line lengths readable. Use `max-w-prose` (about 65 characters) for paragraphs, `max-w-3xl` or narrower for lead text, and roughly `max-w-4xl` for display headings.
-- Use `text-balance` on headings and `text-pretty` on paragraphs.
-- Use at most two font families, loaded through `next/font`: a sans for UI and body, plus an optional display or serif face for headings. Expose them as `--font-sans` and `--font-display` in `@theme`.
-- Use one page-level `h1`, then follow heading order (`h2`, then `h3`). Choose a heading level for meaning and get its size from the scale above.
+| Role                    | Preset            | Size                                       |
+| ----------------------- | ----------------- | ------------------------------------------ |
+| Hero statement (h1)     | `type.hero`       | `text-hero` token (fluid, 34px → 128px)     |
+| Closing statement       | `type.mega`       | `text-mega` token (fluid, 48px → 176px)     |
+| Footer wordmark         | `text-wordmark`   | fills the container width                   |
+| Large section heading   | `type.display`    | `text-4xl` → `md:text-5xl` → `lg:text-6xl`  |
+| Section heading / h3    | `type.heading`    | `text-3xl` → `md:text-4xl` → `lg:text-5xl`  |
+| Subheading              | `type.subheading` | `text-xl` → `md:text-2xl`                   |
+| Lead paragraph          | `type.lead`       | `text-lg` → `md:text-xl`, muted             |
+| Body                    | `type.body`       | `text-base`                                 |
+| Small / caption         | `type.small`      | `text-sm`, muted                            |
+| Label / eyebrow         | `type.label`      | mono `text-xs`, uppercase, widest tracking  |
+
+- Body text is never smaller than `text-base` (16px).
+- Keep line lengths readable: `max-w-prose` or narrower for paragraphs, `max-w-md`/`max-w-xl` for leads.
+- Headings use `text-balance`, paragraphs `text-pretty`. One `h1` per page, then `h2`, `h3` in order.
+- Section labels use `<SectionLabel number="02">Name</SectionLabel>`.
 
 ## 3. Spacing (8px system)
 
 All spacing is a multiple of 8px. A Tailwind spacing step is 4px, so use even steps only:
 `2` (8px), `4` (16), `6` (24), `8` (32), `10` (40), `12` (48), `16` (64), `20` (80), `24` (96), `32` (128), `40` (160).
 
-- Don't use odd steps such as `p-3`, `gap-5` or `mt-7`, and don't use arbitrary values like `mt-[13px]`. The only exceptions are hairline details (`0.5`, `1`) inside small controls, such as the gap between an icon and its label.
-- **Section spacing** is the same everywhere: `py-16 md:py-24 lg:py-32` (64 / 96 / 128px). Use a larger value only for the hero or for a deliberate pause.
-- **Container:** `mx-auto w-full max-w-7xl px-4 md:px-8 lg:px-12`. Put it in one reusable `Container` component and don't repeat it inline.
-- **Vertical rhythm inside a section:** about 16px from eyebrow to heading, 24px from heading to lead, and 48–64px from the intro to the content.
-- **Proportional scaling:** spacing grows from mobile to desktop in steps (for example `gap-8 md:gap-12 lg:gap-16`). Never use the same tight value on desktop as on mobile.
+- Don't use odd steps such as `p-3`, `gap-5` or `mt-7`, and don't use arbitrary pixel values. The only exceptions are hairline details (`0.5`, `1`) inside small controls, em-based optical adjustments in headlines, and viewport-based layout heights for scroll scenes.
+- **Section spacing** is the same everywhere: `py-16 md:py-24 lg:py-32`, through the `<Section>` component.
+- **Container:** use `<Container>` (`max-w-7xl px-4 md:px-8 lg:px-12`, widening to `2xl:max-w-8xl` on large desktops). Never repeat the container classes inline.
+- **Vertical rhythm inside a section:** about 16px from label to heading, 24px from heading to lead, and 48–64px from the intro to the content.
+- **Proportional scaling:** spacing grows from mobile to desktop in steps (for example `gap-8 md:gap-12 lg:gap-16`).
 
-## 4. Color tokens
+## 4. Color tokens and section tones
 
-Every color comes from a token defined in `src/app/globals.css`, with light values in `:root` and dark values in `@media (prefers-color-scheme: dark)`. Each token is exposed through `@theme inline` so Tailwind classes like `bg-surface` work.
+Brand colors (measured from the logo) are defined once, as raw palette variables at the top of `globals.css`. Components never use them directly; they use semantic tokens.
 
-| Token        | CSS variable   | Tailwind usage                  | Purpose                                  |
-| ------------ | -------------- | ------------------------------- | ---------------------------------------- |
-| Primary      | `--primary`    | `bg-primary`, `text-primary`    | Main brand color, primary buttons        |
-| Primary text | `--primary-foreground` | `text-primary-foreground` | Text on top of primary                |
-| Secondary    | `--secondary`  | `bg-secondary`                  | Secondary buttons, quiet fills           |
-| Accent       | `--accent`     | `text-accent`, `bg-accent`      | Small highlights, links, focus rings     |
-| Background   | `--background` | `bg-background`                 | Page background                          |
-| Surface      | `--surface`    | `bg-surface`                    | Raised or alternate areas, cards, inputs |
-| Text         | `--foreground` | `text-foreground`               | Main text                                |
-| Muted text   | `--muted`      | `text-muted`                    | Secondary text, captions                 |
-| Border       | `--border`     | `border-border`                 | Dividers, outlines                       |
+Every section sets a **tone** with `data-tone="paper"` (warm ivory, the default) or `data-tone="night"` (deep navy). The tone redefines the semantic tokens, so the same classes work on both. In the visitor's dark mode, paper sections become "dusk" navy and night sections go deeper, so tones stay distinct.
+
+| Token        | Tailwind usage                                  | Purpose                                     |
+| ------------ | ----------------------------------------------- | ------------------------------------------- |
+| Background   | `bg-background`                                 | Section background (set by the tone)        |
+| Surface      | `bg-surface`                                    | Raised or alternate areas, panels           |
+| Text         | `text-foreground`                               | Main text                                   |
+| Muted text   | `text-muted`                                    | Secondary text, captions                    |
+| Border       | `border-border`                                 | Hairlines and dividers                      |
+| Primary      | `bg-primary`, `hover:bg-primary-hover`, `text-primary-foreground` | Primary buttons (royal blue) |
+| Secondary    | `bg-secondary`, `text-secondary-foreground`     | Inverted buttons                            |
+| Highlight    | `text-highlight`                                | Blue emphasis in text, links, the "Scope" wordmark |
+| Accent       | `text-accent`                                   | Small gold text accents (contrast-safe per tone) |
+| Signal       | `bg-signal`, `stroke-signal`                    | The gold scope dot and decorative gold marks |
+| Ring         | (global `:focus-visible`)                       | Focus outline: blue on paper, gold on night |
 
 Rules:
-- **Never put hex, rgb or hsl values in components**, and don't use Tailwind's built-in palette colors (`indigo-500`, `slate-900`, `white` and so on) for brand or UI color. If a token is missing, add it to `globals.css` for both light and dark mode, then use it.
-- Opacity modifiers on tokens are fine, for example `bg-accent/10` or `border-border/60`.
-- Use the accent sparingly. If everything is highlighted, nothing is.
-- Text must meet WCAG AA contrast (4.5:1 for body text, 3:1 for large text) in both light and dark mode.
+- **Never put hex, rgb or hsl values in components**, and don't use Tailwind's built-in palette colors. If a token is missing, add it to `globals.css` for both tones and both color schemes.
+- Code that can't use CSS classes reads the tokens instead: the 3D scene reads CSS variables at runtime; the Open Graph image reads `globals.css` at build time.
+- Opacity modifiers on tokens are fine (`bg-foreground/5`, `border-signal/50`).
+- Text must meet WCAG AA contrast (4.5:1 body, 3:1 large text) in both tones and both color schemes. Re-check contrast when changing a token. Never dim body text with opacity.
 
 ## 5. Components
 
-Build reusable components in `src/components/` (put small primitives in `src/components/ui/`). Pages and sections compose these components; they don't restyle them inline.
+Build reusable components in `src/components/` (primitives in `src/components/ui/`). Pages and sections compose them; they don't restyle them inline.
 
-- **Buttons:** one `Button` component with a `variant` (`primary`, `secondary`, `ghost`) and a `size` (`md`, `lg`). It renders as a `<button>`, or as a `Link` when given an `href`. Every variant defines its default, `hover`, `active`, `focus-visible` and `disabled` states. The minimum height is `h-12` (48px) for touch.
-- **Cards:** where cards are the right choice, use one shared structure: optional media, then label, then title, then body, then action, with the same padding (`p-6 md:p-8`), border and radius everywhere. Don't use cards just to put a box around content.
-- **Forms:** a shared `Input`, `Textarea` and `Label`, with the same height (`h-12`), border, radius and padding. Each has a visible `<label>`, helper or error text linked through `aria-describedby`, and clear `focus-visible`, `invalid` and `disabled` styles.
-- **Interaction states:** everything interactive shows a clear state on hover (only on devices that support hover), on press (`active:`) and on keyboard focus. Use `focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent` consistently, and never remove focus outlines without a replacement.
-- **Accessibility:** use real `<button>` and `<a>` elements (never clickable `<div>`s), give icon-only buttons an `aria-label`, hide decorative icons with `aria-hidden`, make sure every action works with the keyboard, and set `aria-expanded` and `aria-controls` on toggles. Every touch target is at least 48×48px.
+- **Buttons:** `<Button>` with `variant` (`primary`, `secondary`, `ghost`), `size` (`md`, `lg`), optional Lucide `icon` and `iconMotion`. It renders a link when given `href`. The label rolls up on hover. Minimum height `h-12`. Wrap the main call to action in `<Magnetic>`.
+- **Links:** `<ArrowLink>` for text links with the animated underline (`link-underline` utility). `<SmartLink>` chooses Next.js navigation or a plain anchor.
+- **Cards:** where a card is genuinely right, use one structure (label, title, body, action) with the same padding (`p-6 md:p-8`), a hairline border and no rounding.
+- **Forms:** shared `Input`, `Textarea` and `Label` (to be built with the contact page): `h-12`, hairline border, visible labels, helper and error text via `aria-describedby`, clear focus, invalid and disabled styles.
+- **Interaction states:** hover (Tailwind's `hover:` only fires on hover-capable devices), press (`active:`), and keyboard focus (global `:focus-visible` ring; never remove it).
+- **Accessibility:** real `<button>` and `<a>` elements, `aria-label` on icon-only buttons, decorative icons and art `aria-hidden`, `aria-expanded`/`aria-controls` on toggles, touch targets at least 48×48px. Accessible names must contain the visible text (for example the logo keeps a hidden "o" inside the gold orb). Prefer native elements: the FAQ uses `<details>`.
 
 ## 6. Layout
 
-- **Use editorial compositions** built on a 12-column grid (`grid grid-cols-4 md:grid-cols-8 lg:grid-cols-12`). Place content across columns deliberately, for example a heading in columns 1–5 and body text in columns 7–12.
-- **Use asymmetry where it helps.** Uneven splits (5/7, 4/8), offset headings, and images that break the container edge all create rhythm. Use them on purpose, not at random.
-- **Mix full-width and contained layouts.** Full-bleed bands (a statement, an image, a background change) alternate with contained content. Backgrounds can go full-bleed while the content inside stays in the `Container`.
-- **Vary the sections.** Adjacent sections should differ in structure (split, list, full-bleed, grid) and in density. No two sections in a row should share the same layout.
-- **Show the structure.** Hairline borders (`border-border`), numbered labels such as "01 / Services", and clear alignment lines often work better than boxes and shadows.
+- **Editorial compositions** on a 12-column grid (`grid-cols-4 md:grid-cols-8 lg:grid-cols-12`). Place content across columns deliberately (heading in columns 1–8, lead in 9–12).
+- **Use asymmetry where it helps:** uneven splits, sticky side columns, art that breaks the container edge.
+- **Mix full-bleed and contained:** tone changes run full width while content stays in the `Container`.
+- **Vary the sections:** adjacent sections differ in structure and tone. Current homepage rhythm: hero (night) → positioning (night, statement) → AI search (paper, sticky visual) → practices (night, horizontal) → A–Z index (paper) → markets (night, map) → approach (paper) → FAQ (paper surface) → closing call to action (night, scope reveal) → footer (night).
+- **Show the structure:** hairlines, numbered labels and alignment instead of boxes and shadows.
 
-## 7. Animation (Motion for React)
+## 7. Animation
 
-- Import from `motion/react`. Use Motion for all JavaScript animation; plain CSS transitions are fine for simple hover color and opacity changes.
-- **Reduced motion:** wrap the app in `<MotionConfig reducedMotion="user">` (in a client provider component used by the root layout) so position and scale animations turn off for people who ask for less motion. Any custom movement must also check `useReducedMotion()`. CSS animations need a `motion-reduce:` fallback.
-- **Scroll reveals:** keep them subtle. Use opacity 0→1 and `y` of 16–24px, a duration of 0.4–0.6s, an ease-out curve, and `viewport={{ once: true }}`. Use one shared `Reveal` component. Don't animate the same element twice.
-- **Stagger** related items (list rows, grid items) by 0.06–0.1s, with no more than about 6 items in a stagger.
-- **Hover:** small and smooth changes only, for example color, a 2–4px shift or an underline. No large scaling, bouncing, spinning or parallax-heavy effects.
-- **Animation supports hierarchy.** Animate the focal element first, then the supporting elements. Never animate the main text in a way that delays reading it, and keep the page usable even if JavaScript fails. Never animate layout properties (`width`, `height`, `top`) when `transform` or `opacity` can do the job.
+Use the right tool for each job, with restraint. Not every section should fade up: vary the technique and give each one a purpose.
+
+- **CSS** for the hero intro (it must run before JavaScript loads), hover transitions, and line drawings (`draw` utility with `pathLength="1"`, triggered by `<DrawOnView>`).
+- **Motion for React** (`motion/react`) for component and UI animation: reveals (`<Reveal>`, `<RevealList>`/`<RevealItem>`), menus, accordions, layout transitions, magnetic buttons, the cursor, counters.
+- **GSAP + ScrollTrigger** for scroll-linked storytelling only: scrubbed text, pinned scenes, horizontal scrolling, clip-path transitions, parallax. Always use `useScrollScene(ref, setup)` from `src/lib/gsap.ts` and wrap effects in `gsap.matchMedia()` with `motionQueries` so they only run where intended.
+- **three.js / React Three Fiber** only for the hero globe, loaded lazily (`next/dynamic`, `ssr: false`) after the browser is idle, only on hardware-accelerated WebGL, paused when off screen, with a static fallback. Don't add 3D elsewhere without a brand reason.
+- **Reduced motion:** `MotionConfig reducedMotion="user"` covers Motion transforms. For anything that changes what is rendered, use `usePrefersReducedMotion()` (never Motion's `useReducedMotion`, which causes hydration mismatches). Horizontal and pinned layouts use the `h-scroll:` variant, which only applies with motion allowed on large screens. CSS animations need a `motion-reduce:` or media-query fallback. With reduced motion, every piece of content must still be visible.
+- **Timing:** reveals 0.6–0.9s with the `ease-out-expo` curve, staggers 0.04–0.1s, nothing that delays reading the main text.
+- **LCP-safe hero text:** the hero headline is painted from the first frame; a background-colored shutter lifts to reveal it. Don't animate the LCP text from fully hidden.
 
 ## 8. Responsive design
 
-- **Mobile-first:** write base classes for a 360–430px phone, then add `md:` for tablets and `lg:`/`xl:` for desktop.
-- **Design the tablet layout (768–1024px) separately.** Don't just stretch the mobile version or squeeze the desktop one. Tablets often get a two-column layout where desktop uses three or an asymmetric 12-column split.
-- **Design the desktop layout properly:** use the width for editorial compositions instead of one wide centered column.
-- **Don't just shrink the desktop design.** On small screens, reorder, stack, simplify or hide content. Change the composition, not only the font sizes.
-- No horizontal scrolling at any width from 320px up. Check at 390px, 768px and 1440px before you finish.
+- **Mobile-first:** base classes for a 360–430px phone, then `md:` (tablet), `lg:` (laptop), `xl:`/`2xl:` (desktop and large desktop).
+- **Design the tablet layout separately** (for example the search steps sit beside their visual at `md`).
+- **Don't just shrink the desktop design.** Reorder, stack, simplify: horizontal scrolling becomes stacked panels, the pinned visual becomes one visual per step, the index preview becomes an accordion.
+- **Render only what a breakpoint shows** when a component is heavy (`useMediaQuery` with a sensible server default), rather than hiding duplicates with CSS.
+- No horizontal page scroll at any width from 320px up. Check 390px, 768px, 1024px, 1440px and 1920px.
 
-## 9. Quality
+## 9. Quality and performance
 
-- **Semantic HTML:** use `header`, `nav`, `main`, `section` (with a heading or `aria-labelledby`), `article`, `footer`, `ul`/`ol` for lists, and `figure`/`figcaption` for media.
-- **Accessibility:** follow WCAG 2.2 AA, use logical heading order, provide `lang`, alt text (empty `alt=""` for decorative images), visible focus and a "skip to content" link.
-- **SEO basics:** each page exports `metadata` (a unique `title` and `description`, plus Open Graph). Include `metadataBase`, a sitemap (`app/sitemap.ts`), `app/robots.ts` and meaningful link text.
-- **Images:** always use `next/image` with `width`/`height` (or `fill` with `sizes`). Add `preload` only on the above-the-fold hero image (`priority` is deprecated in this Next.js version). Use modern formats and never ship oversized source files.
-- **Fonts:** load them only through `next/font`, use at most two families, and limit weights to the ones actually used.
-- **Performance:** server components are the default. Add `"use client"` only to the smallest component that needs interactivity or Motion. Don't add heavy libraries for small effects, and keep the homepage statically prerendered.
-- **Reusable components:** if markup appears twice, make it a component. Keep components small and typed with TypeScript props, and don't duplicate design decisions.
+- **Semantic HTML:** `header`, `nav`, `main`, `section` (with a heading or `aria-labelledby`), `article`, `footer`, lists for lists, `figure` for illustrations.
+- **Accessibility:** WCAG 2.2 AA, logical headings, a skip link, visible focus, alt text (`alt=""` for decorative images). Target 100 in Lighthouse accessibility.
+- **SEO:** every page exports `metadata` (unique title and description). Keep `metadataBase`, `app/sitemap.ts` (add each new page), `app/robots.ts`, the Open Graph image and the JSON-LD in `src/components/seo/structured-data.tsx` up to date.
+- **Images:** `next/image` with dimensions or `fill` + `sizes`; `preload` only for an above-the-fold hero image (`priority` is deprecated here).
+- **Fonts:** only through `next/font`; preload only the font used above the fold.
+- **Performance (measured on this site):** server components by default; `"use client"` only on the smallest interactive piece. Keep heavy interactive components lean (prefer CSS for repeated decorative animation). Things that were measured and made Lighthouse worse here: wrapping static sections in `<Suspense>`, `LazyMotion`, and deferring GSAP until after load. Don't reintroduce them without re-measuring.
+- Never compute values that differ between server and browser during render (round floating-point SVG coordinates; read dates and media queries on the client).
 
 ## Before you finish any UI change
 
-1. Every color is a token, every spacing value is an 8px step, and every font size is from the type scale.
-2. Check the page against section 1. If any of those generic AI patterns slipped in, remove them.
-3. Hover, active, focus and disabled states all work, and everything can be used with the keyboard.
-4. Reduced motion is respected.
-5. `npm run lint`, `npm run typecheck` and `npm run build` all pass.
-6. Look at the page at 390px, 768px and 1440px, in both light and dark mode.
+1. Every color is a token, every spacing value is an 8px step, and every font size comes from the type presets.
+2. Check the page against section 1. Remove any generic AI pattern or invented claim that slipped in.
+3. Hover, active, focus and disabled states work, and everything can be used with the keyboard.
+4. Reduced motion is respected and all content is visible with it on.
+5. `npm run lint`, `npm run typecheck` and `npm run build` all pass, with no console errors or hydration warnings.
+6. Look at the page at 390px, 768px, 1024px, 1440px and 1920px, in light and dark mode, and re-run Lighthouse for pages with new interactive or animated sections.

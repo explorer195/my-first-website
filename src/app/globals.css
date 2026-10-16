@@ -1,47 +1,418 @@
 @import "tailwindcss";
 
+/* ------------------------------------------------------------------
+   1. Brand palette
+   Measured from the DigitalScope logo. Components never use these
+   directly — they use the semantic tokens in section 2.
+   ------------------------------------------------------------------ */
 :root {
-  --background: #ffffff;
-  --foreground: #0f172a;
-  --muted: #64748b;
-  --surface: #f8fafc;
-  --border: #e2e8f0;
-  --accent: #6366f1;
+  --navy-ink: #02122f; /* "Digital" wordmark */
+  --night-1000: #01050f;
+  --night-950: #030a1c;
+  --night-900: #071531;
+  --dusk-900: #0a1630;
+  --dusk-800: #10203f;
+  --royal-700: #0047b0;
+  --royal-600: #0058cc; /* "Scope" wordmark */
+  --royal-550: #0a5fd6;
+  --royal-500: #1366e6;
+  --royal-400: #5b95ff;
+  --cyan-400: #22a8fa; /* emblem highlight */
+  --gold-700: #9a5f1c;
+  --gold-500: #d88e3e; /* growth arrow */
+  --gold-300: #f7b457;
+  --paper-50: #f5f3ee;
+  --paper-100: #ebe7de;
+  --snow: #eef1f7;
+  --slate-500: #4f5a76;
+  --slate-300: #97a3c0;
 }
 
+/* ------------------------------------------------------------------
+   2. Semantic tokens, set per section tone.
+   "paper" is the default light tone, "night" the deep navy tone.
+   Add data-tone="night" or data-tone="paper" to a section to switch.
+   ------------------------------------------------------------------ */
+:root,
+[data-tone="paper"] {
+  color-scheme: light;
+  --background: var(--paper-50);
+  --surface: var(--paper-100);
+  --foreground: var(--navy-ink);
+  --muted: var(--slate-500);
+  --border: rgb(2 18 47 / 0.14);
+  --primary: var(--royal-600);
+  --primary-hover: var(--royal-700);
+  --primary-foreground: var(--paper-50);
+  --secondary: var(--navy-ink);
+  --secondary-foreground: var(--paper-50);
+  --highlight: var(--royal-600);
+  --accent: var(--gold-700);
+  --signal: var(--gold-500);
+  --ring: var(--royal-600);
+}
+
+[data-tone="night"] {
+  color-scheme: dark;
+  --background: var(--night-950);
+  --surface: var(--night-900);
+  --foreground: var(--snow);
+  --muted: var(--slate-300);
+  --border: rgb(238 241 247 / 0.12);
+  --primary: var(--royal-550);
+  --primary-hover: var(--royal-500);
+  --primary-foreground: var(--snow);
+  --secondary: var(--snow);
+  --secondary-foreground: var(--night-950);
+  --highlight: var(--royal-400);
+  --accent: var(--gold-500);
+  --signal: var(--gold-500);
+  --ring: var(--gold-500);
+}
+
+/* Dark mode: paper sections become "dusk", night sections go deeper,
+   so the two tones stay distinguishable. */
 @media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0b0d14;
-    --foreground: #f1f5f9;
-    --muted: #94a3b8;
-    --surface: #121521;
-    --border: #1f2433;
-    --accent: #818cf8;
+  :root,
+  [data-tone="paper"] {
+    color-scheme: dark;
+    --background: var(--dusk-900);
+    --surface: var(--dusk-800);
+    --foreground: var(--snow);
+    --muted: var(--slate-300);
+    --border: rgb(238 241 247 / 0.12);
+    --primary: var(--royal-550);
+    --primary-hover: var(--royal-500);
+    --primary-foreground: var(--snow);
+    --secondary: var(--snow);
+    --secondary-foreground: var(--night-950);
+    --highlight: var(--royal-400);
+    --accent: var(--gold-500);
+    --ring: var(--gold-500);
+  }
+
+  [data-tone="night"] {
+    --background: var(--night-1000);
+    --surface: var(--night-950);
   }
 }
 
+/* ------------------------------------------------------------------
+   3. Tailwind theme
+   ------------------------------------------------------------------ */
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
-  --color-surface: var(--surface);
   --color-border: var(--border);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-highlight: var(--highlight);
   --color-accent: var(--accent);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-signal: var(--signal);
+  --color-ring: var(--ring);
+  --font-sans: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-mona), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-html {
-  scroll-behavior: smooth;
+@theme {
+  /* Oversized statement type (hero, closing call to action, footer). */
+  --text-hero: clamp(2.125rem, 0.66rem + 6.76vw, 8rem);
+  --text-hero--line-height: 0.92;
+  --text-hero--letter-spacing: -0.03em;
+  --text-mega: clamp(3rem, 0.4rem + 9.4vw, 11rem);
+  --text-mega--line-height: 0.9;
+  --text-mega--letter-spacing: -0.05em;
+
+  /* Sized so "DigitalScope" spans the container width. */
+  --text-wordmark: min(12vw, 11.5rem);
+
+  --tracking-brand: 0.42em;
+  --container-8xl: 96rem;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+
+  --animate-rise: rise 1.2s var(--ease-out-expo) both;
+  --animate-shutter: shutter 1s var(--ease-in-out-quart) both;
+  --animate-fade: fade 1.2s var(--ease-out-expo) both;
+
+  /* Hero lines: the text is painted from the first frame (good for LCP)
+     and nudges up while a shutter lifts away to reveal it. */
+  @keyframes rise {
+    from {
+      transform: translateY(36%);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes shutter {
+    from {
+      transform: translateY(0);
+    }
+    to {
+      transform: translateY(-101%);
+    }
+  }
+
+  @keyframes fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-}
+/* Horizontal scroll storytelling only runs on large screens with motion
+   allowed. Everyone else gets a normal vertical layout. */
+@custom-variant h-scroll (@media (width >= 64rem) and (prefers-reduced-motion: no-preference));
 
-@media (prefers-reduced-motion: reduce) {
+/* ------------------------------------------------------------------
+   4. Base styles
+   ------------------------------------------------------------------ */
+@layer base {
   html {
-    scroll-behavior: auto;
+    scroll-padding-top: 6rem;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+  }
+
+  [data-tone] {
+    background-color: var(--background);
+    color: var(--foreground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 3px;
+  }
+
+  ::selection {
+    background-color: var(--gold-300);
+    color: var(--night-950);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------
+   5. Utilities
+   ------------------------------------------------------------------ */
+
+/* Underline that draws in from the left on hover and keyboard focus. */
+@utility link-underline {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.5s var(--ease-out-expo);
+
+  &:hover,
+  &:focus-visible {
+    background-size: 100% 1px;
+  }
+}
+
+/* The gold "scope dot" — the brand's full stop, taken from the logo. */
+@utility scope-dot {
+  display: inline-block;
+  width: 0.17em;
+  height: 0.17em;
+  margin-left: 0.06em;
+  border-radius: 9999px;
+  background-color: var(--signal);
+}
+
+/* The gold orb that replaces the "o" in "Scope". */
+@utility scope-o {
+  display: inline-block;
+  width: 0.56em;
+  height: 0.56em;
+  margin-inline: 0.03em;
+  border-radius: 9999px;
+  background-color: var(--signal);
+}
+
+/* Art direction for the hero globe: size and center per breakpoint.
+   The visible sphere is about 69% of the stage; the rest holds the orbit. */
+@utility globe-stage {
+  --size: 150vw;
+  --cx: 62vw;
+  --cy: 32svh;
+  position: absolute;
+  width: var(--size);
+  height: var(--size);
+  left: calc(var(--cx) - var(--size) / 2);
+  top: calc(var(--cy) - var(--size) / 2);
+
+  @media (width >= 48rem) {
+    --size: 112vw;
+    --cx: 66vw;
+    --cy: 36svh;
+  }
+
+  @media (width >= 64rem) {
+    --size: min(96vw, 128svh);
+    --cx: 70vw;
+    --cy: 52svh;
+  }
+
+  @media (width >= 96rem) {
+    --size: min(90vw, 132svh);
+    --cx: 68vw;
+  }
+}
+
+/* Placeholder sphere shown until the 3D globe is ready (and as its fallback).
+   Sized to the 3D globe's silhouette: camera at 5.2 units, 32° field of view. */
+@utility globe-poster {
+  position: absolute;
+  inset: 15.6%;
+  border-radius: 9999px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    color-mix(in oklab, var(--night-950) 90%, var(--royal-600)) 62%,
+    color-mix(in oklab, var(--night-950) 45%, var(--royal-600)) 100%
+  );
+}
+
+/* A light that drops down the hairline under "Scroll". */
+@utility scroll-cue {
+  &::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 0;
+    height: 40%;
+    background-color: var(--signal);
+    animation: scroll-cue 2.4s var(--ease-in-out-quart) infinite;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::after {
+      animation: none;
+    }
+  }
+}
+
+@keyframes scroll-cue {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(250%);
+  }
+}
+
+/* Pulse ring around primary markets on the world map. */
+@utility map-pulse {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: map-pulse 2.8s var(--ease-out-expo) infinite;
+
+  @media (prefers-reduced-motion: reduce) {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+
+@keyframes map-pulse {
+  from {
+    transform: scale(0.4);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Native <details> that animates open where the browser supports it. */
+@utility details-animated {
+  interpolate-size: allow-keywords;
+
+  & > summary {
+    list-style: none;
+  }
+
+  & > summary::-webkit-details-marker {
+    display: none;
+  }
+
+  &::details-content {
+    block-size: 0;
+    overflow: hidden;
+    transition:
+      block-size 0.6s var(--ease-out-expo),
+      content-visibility 0.6s allow-discrete;
+  }
+
+  &[open]::details-content {
+    block-size: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &::details-content {
+      transition: none;
+    }
+  }
+}
+
+/* SVG stroke that draws itself in when its parent gets data-drawn="true".
+   Shapes need pathLength="1"; stagger with style={{ "--delay": "0.2s" }}. */
+@utility draw {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  transition: stroke-dashoffset 1.6s cubic-bezier(0.65, 0, 0.35, 1);
+  transition-delay: var(--delay, 0s);
+
+  [data-drawn="true"] & {
+    stroke-dashoffset: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce), (scripting: none) {
+    stroke-dashoffset: 0;
+    transition: none;
+  }
+}
+
+/* Hollow letterforms for large decorative type. */
+@utility text-outline {
+  -webkit-text-fill-color: transparent;
+  -webkit-text-stroke: 1px currentColor;
+}
+
+/* Hides content visually while keeping it available to screen readers
+   until it receives focus (used by the skip link). */
+@utility sr-only-focusable {
+  &:not(:focus):not(:focus-within) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
   }
 }
